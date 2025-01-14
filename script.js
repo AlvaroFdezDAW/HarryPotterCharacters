@@ -6,7 +6,7 @@ const houseColors =
         text: 'var(--gryffindor-text)'
     },
 
-    'Hufflepuff':
+    'Hufflepuff': 
     {
         background: 'var(--hufflepuff-bg)',
         text: 'var(--hufflepuff-text)'
@@ -17,7 +17,7 @@ const houseColors =
         background: 'var(--ravenclaw-bg)',
         text: 'var(--ravenclaw-text)'
     },
-    
+
     'Slytherin': 
     {
         background: 'var(--slytherin-bg)',
@@ -65,10 +65,44 @@ function createCharacterCard(character)
     const houseElement = document.createElement('p');
     houseElement.textContent = `House: ${character.house || 'unknown'}`;
 
-    card.appendChild(img);
-    card.appendChild(name);
-    card.appendChild(species);
-    card.appendChild(houseElement);
+    const actorLabel = character.gender === 'female' ? 'Actress' : 'Actor';
+
+    const additionalInfo = document.createElement('div');
+    additionalInfo.classList.add('additional-info');
+    additionalInfo.style.display = 'none';
+    additionalInfo.innerHTML = `
+        <p>Patronus: ${character.patronus || 'unknown'}</p>
+        <p>${actorLabel}: ${character.actor || 'unknown'}</p>
+    `;
+
+    const seeMoreButton = document.createElement('p');
+    seeMoreButton.textContent = 'Show more';
+    seeMoreButton.classList.add('show-more');
+    seeMoreButton.style.cursor = 'pointer';
+
+    seeMoreButton.addEventListener('click', () => {
+        if (additionalInfo.style.display === 'none') 
+        {
+            additionalInfo.style.display = 'block';
+            seeMoreButton.textContent = 'Show less';
+        } 
+        else 
+        {
+            additionalInfo.style.display = 'none';
+            seeMoreButton.textContent = 'Show more';
+        }
+    });
+
+    const cardContent = document.createElement('div');
+    cardContent.classList.add('card-content');
+    cardContent.appendChild(img);
+    cardContent.appendChild(name);
+    cardContent.appendChild(species);
+    cardContent.appendChild(houseElement);
+    cardContent.appendChild(additionalInfo);
+
+    card.appendChild(cardContent);
+    card.appendChild(seeMoreButton);
 
     return card;
 }
@@ -119,17 +153,12 @@ document.addEventListener('DOMContentLoaded', () => {
             displayCharacters(allCharacters);
         });
 
-        const searchInput = document.getElementById('search');
-
-        searchInput.addEventListener('input', function () 
-        {
-            const searchTerm = searchInput.value.toLowerCase();
-
-            const filteredByName = allCharacters.filter(character =>
-                character.name.toLowerCase().includes(searchTerm)
+        document.getElementById('search').addEventListener('input', (e) => {
+            const searchQuery = e.target.value.toLowerCase();
+            const filteredCharacters = allCharacters.filter(character => 
+                character.name.toLowerCase().includes(searchQuery)
             );
-
-            displayCharacters(filteredByName);
+            displayCharacters(filteredCharacters);
         });
     });
 });
